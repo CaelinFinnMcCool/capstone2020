@@ -18,7 +18,7 @@ def test_class_saves_data(mocker):
     directory = 'FAA/DOC-ID/'
     filename = 'document.json'
     contents = {'id': 'FAA'}
-    data_repo.save_data(directory, filename, contents)
+    data_repo.save_text_data(directory, filename, contents)
 
     file_mock.assert_called_once_with('data/FAA/DOC-ID/document.json', 'w')
     file_mock().write.assert_called_once_with('{"id": "FAA"}')

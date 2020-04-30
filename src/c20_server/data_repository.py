@@ -8,7 +8,7 @@ class DataRepository:
     def __init__(self, base_path):
         self.base_path = base_path
 
-    def save_data(self, directory_name, filename, contents):
+    def save_text_data(self, directory_name, filename, contents):
         self.ensure_directory_exists(directory_name)
         path = os.path.join(self.base_path, directory_name, filename)
         with open(path, 'w') as file:

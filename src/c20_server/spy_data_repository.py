@@ -9,7 +9,7 @@ class SpyDataRepository:
     def __init__(self):
         self.saved_items = []
 
-    def save_data(self, directory_name, filename, contents):
+    def save_text_data(self, directory_name, filename, contents):
         item = SavedItem(directory_name=directory_name,
                          filename=filename,
                          contents=contents)

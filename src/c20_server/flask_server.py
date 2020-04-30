@@ -70,8 +70,8 @@ def update_job_manager(job_manager, client_data):
 def save_data(data_repository, list_of_data_dicts):
     data_items = DataExtractor.extract(list_of_data_dicts)
     for data_item in data_items:
-        data_repository.save_data(data_item.folder_name,
-                                  data_item.file_name, data_item.contents)
+        data_repository.save_text_data(data_item.folder_name,
+                                       data_item.file_name, data_item.contents)
 
 
 def redis_connect():
