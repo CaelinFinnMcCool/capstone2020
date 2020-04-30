@@ -14,6 +14,12 @@ class DataRepository:
         with open(path, 'w') as file:
             file.write(json.dumps(contents))
 
+    def save_binary_data(self, directory_name, filename, contents):
+        self.ensure_directory_exists(directory_name)
+        path = os.path.join(self.base_path, directory_name, filename)
+        with open(path, 'wb') as file:
+            file.write(contents)
+
     def ensure_directory_exists(self, directory_name):
         Path(os.path.join(self.base_path, directory_name))\
             .mkdir(parents=True, exist_ok=True)
