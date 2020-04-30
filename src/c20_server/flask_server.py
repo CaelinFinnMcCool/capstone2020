@@ -46,6 +46,14 @@ def create_app(job_manager, data_repository, database):
 
         return {}, 200
 
+    @app.route('/return_file', methods=['POST'])
+    def _return_file():
+        print('Receiving File from Client ...\n')
+        file = request.files['file']
+        file_content = file.read()
+        file.close()
+        return file_content, 200
+
     @app.route('/report_failure', methods=['POST'])
     def _report_failure():
         client_data = request.json

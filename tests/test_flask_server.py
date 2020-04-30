@@ -1,5 +1,6 @@
 import json
 from unittest.mock import patch
+from io import BytesIO
 import pytest
 from c20_server.flask_server import create_app, redis_connect
 from c20_server.mock_job_manager import MockJobManager
@@ -197,3 +198,21 @@ def test_run_server_with_no_redis_connection():
     with patch('sys.exit') as exit_server:
         redis_connect()
         assert exit_server.called
+
+
+def test_return_single_file(job_manager):
+    app = create_app(job_manager, SpyDataRepository(), MockDatabase(True))
+    app.config['TESTING'] = True
+    client = app.test_client()
+    data = {
+        'job_id': '1',
+        'data': [{'folder_name': 'folder_name',
+                  'file_name': 'docket.json',
+                  'data': "some data"}],
+        'file': (BytesIO(b'my file contents'),
+                 'test_file.pdf')
+    }
+    result = client.post('/return_file', buffered=True,
+                         content_type='multipart/form-data', data=data)
+    assert result.status_code == 200
+    assert result.data == b'my file contents'
