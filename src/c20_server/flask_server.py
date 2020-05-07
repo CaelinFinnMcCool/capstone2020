@@ -46,6 +46,20 @@ def create_app(job_manager, data_repository, database):
 
         return {}, 200
 
+    @app.route('/upload_file', methods=['POST'])
+    def upload_file():
+        file = request.files['file']
+        contents = file.stream.read()
+        filename = file.filename
+
+        job_id = request.form['job_id']
+        client_id = request.form['client_id']
+
+        data_repository.save_text_data('fpp', 'filename', 'contents')
+
+        return {}, 200
+
+
     @app.route('/report_failure', methods=['POST'])
     def _report_failure():
         client_data = request.json

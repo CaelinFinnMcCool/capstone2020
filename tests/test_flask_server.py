@@ -197,3 +197,28 @@ def test_run_server_with_no_redis_connection():
     with patch('sys.exit') as exit_server:
         redis_connect()
         assert exit_server.called
+
+
+def test_upload_file(job_manager):
+    data_repository_spy = SpyDataRepository()
+    app = create_app(job_manager, data_repository_spy, MockDatabase(True))
+    app.config['TESTING'] = True
+    client = app.test_client()
+
+    binary_data = bytearray([1, 2, 3, 4])
+
+    json_data = {
+        'client_id': '1',
+        'job_id': '1',
+        'file': (binary_data, 'filename.bin')
+    }
+
+    result = client.post('/upload_file', content_type='multipart/form-data', data=json_data)
+
+    assert result.status_code == 200
+
+    first_save = data_repository_spy.saved_items[0]
+
+    assert first_save.directory_name == 'foldername'
+    assert first_save.filename == 'filename'
+    assert first_save.contents == {}
