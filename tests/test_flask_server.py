@@ -204,15 +204,12 @@ def test_return_single_file(job_manager):
     app = create_app(job_manager, SpyDataRepository(), MockDatabase(True))
     app.config['TESTING'] = True
     client = app.test_client()
+
     data = {
+        'client_id': '100',
         'job_id': '1',
-        'data': [{'folder_name': 'folder_name',
-                  'file_name': 'docket.json',
-                  'data': "some data"}],
-        'file': (BytesIO(b'my file contents'),
-                 'test_file.pdf')
+        'file': (BytesIO(b'my file contents'), 'test_file.pdf')
     }
     result = client.post('/return_file', buffered=True,
                          content_type='multipart/form-data', data=data)
     assert result.status_code == 200
-    assert result.data == b'my file contents'

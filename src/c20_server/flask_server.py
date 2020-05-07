@@ -51,6 +51,8 @@ def create_app(job_manager, data_repository, database):
         print('Receiving File from Client ...\n')
         file = request.files['file']
         file_content = file.read()
+        job_id = request.form['job_id']
+        client_id = request.form['client_id']
         file.close()
         return file_content, 200
 
