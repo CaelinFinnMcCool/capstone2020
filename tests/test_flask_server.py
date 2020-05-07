@@ -200,16 +200,25 @@ def test_run_server_with_no_redis_connection():
         assert exit_server.called
 
 
-def test_return_single_file(job_manager):
-    app = create_app(job_manager, SpyDataRepository(), MockDatabase(True))
+def test_upload_file(job_manager):
+    data_repository_spy = SpyDataRepository()
+    app = create_app(job_manager, data_repository_spy, MockDatabase(True))
     app.config['TESTING'] = True
     client = app.test_client()
 
-    data = {
-        'client_id': '100',
+    json_data = {
+        'client_id': '1',
         'job_id': '1',
-        'file': (BytesIO(b'my file contents'), 'test_file.pdf')
+        'file': (BytesIO(b'contents'), 'filename.pdf')
     }
-    result = client.post('/return_file', buffered=True,
-                         content_type='multipart/form-data', data=data)
+
+    result = client.post('/upload_file', content_type='multipart/form-data',
+                         data=json_data)
+
     assert result.status_code == 200
+
+    first_save = data_repository_spy.saved_items[0]
+
+    assert first_save.directory_name == 'foldername'
+    assert first_save.filename == 'filename.pdf'
+    assert first_save.contents == b'contents'

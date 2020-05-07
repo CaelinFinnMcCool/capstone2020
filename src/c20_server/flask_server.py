@@ -42,19 +42,21 @@ def create_app(job_manager, data_repository, database):
             return {}, 400
 
         update_job_manager(job_manager, client_data)
-        save_data(data_repository, client_data['data'])
+        save_text_data(data_repository, client_data['data'])
 
         return {}, 200
 
-    @app.route('/return_file', methods=['POST'])
-    def _return_file():
-        print('Receiving File from Client ...\n')
+    @app.route('/upload_file', methods=['POST'])
+    def upload_file():
         file = request.files['file']
-        file_content = file.read()
+        contents = file.stream.read()
+        filename = file.filename
+
         job_id = request.form['job_id']
         client_id = request.form['client_id']
-        file.close()
-        return file_content, 200
+        data_repository.save_text_data('foldername', filename, contents)
+
+        return {}, 200
 
     @app.route('/report_failure', methods=['POST'])
     def _report_failure():
@@ -77,11 +79,11 @@ def update_job_manager(job_manager, client_data):
         print(job, '\n')
 
 
-def save_data(data_repository, list_of_data_dicts):
+def save_text_data(data_repository, list_of_data_dicts):
     data_items = DataExtractor.extract(list_of_data_dicts)
     for data_item in data_items:
-        data_repository.save_data(data_item.folder_name,
-                                  data_item.file_name, data_item.contents)
+        data_repository.save_text_data(data_item.folder_name,
+                                       data_item.file_name, data_item.contents)
 
 
 def redis_connect():

@@ -12,14 +12,27 @@ class DummyMakeDirDataRepository(DataRepository):
         self.ensure_directory_exists_called = True
 
 
-def test_class_saves_data(mocker):
+def test_class_saves_text_data(mocker):
     file_mock = mocker.patch('c20_server.data_repository.open', mock_open())
     data_repo = DummyMakeDirDataRepository('data')
     directory = 'FAA/DOC-ID/'
     filename = 'document.json'
     contents = {'id': 'FAA'}
-    data_repo.save_data(directory, filename, contents)
+    data_repo.save_text_data(directory, filename, contents)
 
     file_mock.assert_called_once_with('data/FAA/DOC-ID/document.json', 'w')
     file_mock().write.assert_called_once_with('{"id": "FAA"}')
+    assert data_repo.ensure_directory_exists_called
+
+
+def test_class_saves_binary_data(mocker):
+    file_mock = mocker.patch('c20_server.data_repository.open', mock_open())
+    data_repo = DummyMakeDirDataRepository('data')
+    directory = 'FAA/DOC-ID/'
+    filename = 'file.bin'
+    contents = bytearray([1, 2, 3, 4])
+    data_repo.save_binary_data(directory, filename, contents)
+
+    file_mock.assert_called_once_with('data/FAA/DOC-ID/file.bin', 'wb')
+    file_mock().write.assert_called_once_with(bytearray([1, 2, 3, 4]))
     assert data_repo.ensure_directory_exists_called
